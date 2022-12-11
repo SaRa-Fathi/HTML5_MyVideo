@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style type="text/css">
+        body{
+            background-color:rgb(242, 236, 229) ;
+        }
+        #contain{
+            width: 650px;
+            background-color:gray ;
+            margin: 0px auto;
+            padding-top: 10px;
+            
+        }
+        #control{
+            background: grey;
+            padding: 10px;
+            width: 630px;
+            /* margin: 0px; */
+        }
+        input[type='range']{
+            appearance: none !important;
+            background: #666;
+            height: 4px;
+            border: #666 1px solid;
+        }
+        /* input[type='range']::slider-thumb{
+            appearance: none !important;
+            background: #fff;
+            height: 15px;
+            width: 15px;
+            cursor: pointer;
+        } */
+        
+
+    </style>
+</head>
+<body>
+    <div id="contain">
+    <video id="vid" src="./video/frozen.mp4" width="650" autoplay  poster="./image/frozen.jpg"></video>
+    <div id="control">
+        <button id="play_pause_btn">play</button>
+        <button id="back_btn"> << </button>
+        <button id="slow_btn"> s< </button>
+        <button id="speed_btn"> d> </button>
+        <button id="next_btn"> >> </button>
+        <input id="slider" type="range" min="0" max="100" value="0" step="1">
+        <span id="curtime"></span> / <span id="fulltime"></span>
+        <button id="mute_btn">Mute</button>
+        <input id="soundSlider" type="range" min="0" max="100" value="100" step="1">
+        <button id="fullscreen_btn">[  ]</button>
+    </div>
+</div>
+    <script>
+        var vid,playBtn,slider,curtime,fulltime,mute_btn,soundSlider,fullscreen_btn,back_btn,next_btn,slow_btn,speed_btn;
+        function intializePlayer(){
+            vid=document.getElementById("vid");
+            playBtn=document.getElementById("play_pause_btn");
+            slider=document.getElementById("slider");
+            curtime=document.getElementById("curtime");
+            fulltime=document.getElementById("fulltime");
+            mute_btn=document.getElementById("mute_btn");
+            soundSlider=document.getElementById("soundSlider");
+            fullscreen_btn=document.getElementById("fullscreen_btn");
+            back_btn=document.getElementById("back_btn");
+            next_btn=document.getElementById("next_btn");
+            slow_btn=document.getElementById("slow_btn");
+            speed_btn=document.getElementById("speed_btn");
+
+            playBtn.addEventListener("click",play_pause ,false);
+            slider.addEventListener("change",video_seek,false);
+            vid.addEventListener("timeupdate",timeUpdate,false);
+            mute_btn.addEventListener("click",mute ,false);
+            soundSlider.addEventListener("change",soundSet,false);
+            fullscreen_btn.addEventListener("click",fullScreen,false);
+            back_btn.addEventListener("click",Back,false);
+            next_btn.addEventListener("click",Next,false);
+            slow_btn.addEventListener("click",Slow,false);
+            speed_btn.addEventListener("click",Speed,false);
+        }
+        window.onload=intializePlayer;
+
+        function play_pause(){
+           if(vid.paused){
+            vid.play();
+            playBtn.innerHTML="pause";
+           }else{
+            vid.pause();
+            playBtn.innerHTML="play";
+           }
+        }
+        function video_seek(){
+            var seek=vid.duration *(slider.value /100);
+            vid.currentTime=seek;
+        }
+        function timeUpdate(){
+            var ct=vid.currentTime*(100/vid.duration);
+            slider.value=ct;
+
+            var cur_mins=Math.floor(vid.currentTime/60);
+            var cur_secs=Math.floor(vid.currentTime-cur_mins*60);
+
+            var full_mins=Math.floor(vid.duration/60);
+            var full_secs=Math.floor(vid.duration-full_mins*60);
+
+            // if(cur_mins<10){ cur_mins="0"+full_secs; }
+            // if(cur_secs<10){ cur_secs="0"+full_secs; }
+            // if(full_secs<10){ full_secs="0"+full_secs; }
+            // if(full_mins<10){ full_mins="0"+full_secs; }
+            curtime.innerHTML=cur_mins+":"+cur_secs;
+            fulltime.innerHTML=full_mins+":"+full_secs;
+
+        }
+        function mute(){
+            if(vid.muted){
+                vid.muted=false;
+                mute_btn.innerHTML="Mute";
+            }else{
+                vid.muted=true;
+                mute_btn.innerHTML="unMute";
+            }
+        }
+        function soundSet(){
+            vid.volume=soundSlider.value/100;
+
+        }
+        function fullScreen(){
+            if(vid.requestFullScreen){
+                vid.requestFullScreen();
+            }
+            else if(vid.webkitRequestFullScreen){
+                vid.webkitRequestFullScreen();
+            }
+            else if(vid.mozRequestFullScreen){
+                vid.mozRequestFullScreen();
+            }
+
+        }
+        function Back(){
+            var ct=vid.duration/100;
+            vid.currentTime=ct;
+            vid.play();
+        }
+        function Next(){
+            var ct=vid.duration*100;
+            vid.currentTime=ct;
+        }
+        function Slow(){
+            vid.playbackRate-=0.1;
+        }
+        function Speed(){
+            vid.playbackRate+=0.1;
+        }
+        //window.addEventListener("click", function(e) {
+//   if(e.key==="d") document.getElementsByTagName("video")[0].playbackRate += .1; else if(e.key==="s") document.getElementsByTagName("video")[0].playbackRate -= .1;
+// }, false);
+    </script>
+    
+</body>
+</html>
